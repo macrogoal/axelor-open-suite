@@ -150,13 +150,19 @@ public class TimesheetCreateServiceImpl implements TimesheetCreateService {
   @Override
   @Transactional(rollbackOn = {Exception.class})
   public Timesheet getOrCreateTimesheet(TimesheetLine timesheetLine) {
-    return getOrCreateTimesheet(
-        timesheetLine.getEmployee(), timesheetLine.getProject(), timesheetLine.getDate());
+    Employee employee = timesheetLine.getEmployee();
+    if (employee == null) {
+      return null;
+    }
+    return getOrCreateTimesheet(employee, timesheetLine.getProject(), timesheetLine.getDate());
   }
 
   @Override
   @Transactional(rollbackOn = {Exception.class})
   public Timesheet getOrCreateTimesheet(Employee employee, Project project, LocalDate date) {
+    if (employee != null) {
+      employee = employeeRepository.find(employee.getId());
+    }
     Company company = null;
     if (project != null) {
       company = project.getCompany();

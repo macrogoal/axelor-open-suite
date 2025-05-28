@@ -434,7 +434,7 @@ public class BudgetServiceImpl implements BudgetService {
   public void validateBudget(Budget budget, boolean checkBudgetKey) throws AxelorException {
     if (budget != null) {
       GlobalBudget globalBudget = budgetToolsService.getGlobalBudgetUsingBudget(budget);
-      if (checkBudgetKey && Strings.isNullOrEmpty(budget.getBudgetKey()) && globalBudget != null) {
+      if (checkBudgetKey && globalBudget != null) {
         String error = computeBudgetKey(budget, globalBudget.getCompany());
         if (!Strings.isNullOrEmpty(error)) {
           throw new AxelorException(TraceBackRepository.CATEGORY_CONFIGURATION_ERROR, error);
@@ -686,13 +686,29 @@ public class BudgetServiceImpl implements BudgetService {
   public void updateBudgetLineAmounts(BudgetLine budgetLine, Budget budget, BigDecimal amount) {
     budgetLine.setRealizedWithNoPo(
         currencyScaleService.getCompanyScaledValue(
-            budget, budgetLine.getRealizedWithNoPo().add(amount)));
+            budget, BigDecimal.ZERO.max(budgetLine.getRealizedWithNoPo().add(amount))));
+    updateOtherAmounts(budgetLine, budget, amount);
+  }
+
+  @Override
+  public void updateBudgetLineAmountWithPo(
+      BudgetLine budgetLine, Budget budget, BigDecimal amount) {
+    budgetLine.setRealizedWithPo(
+        currencyScaleService.getCompanyScaledValue(
+            budget, BigDecimal.ZERO.max(budgetLine.getRealizedWithPo().add(amount))));
+    budgetLine.setAmountCommitted(
+        currencyScaleService.getCompanyScaledValue(
+            budget, BigDecimal.ZERO.max(budgetLine.getAmountCommitted().subtract(amount))));
+    updateOtherAmounts(budgetLine, budget, amount);
+  }
+
+  protected void updateOtherAmounts(BudgetLine budgetLine, Budget budget, BigDecimal amount) {
     budgetLine.setAmountRealized(
         currencyScaleService.getCompanyScaledValue(
-            budget, budgetLine.getAmountRealized().add(amount)));
+            budget, BigDecimal.ZERO.max(budgetLine.getAmountRealized().add(amount))));
     budgetLine.setToBeCommittedAmount(
         currencyScaleService.getCompanyScaledValue(
-            budget, budgetLine.getToBeCommittedAmount().subtract(amount)));
+            budget, BigDecimal.ZERO.max(budgetLine.getToBeCommittedAmount().subtract(amount))));
     BigDecimal firmGap =
         currencyScaleService.getCompanyScaledValue(
             budget,
@@ -702,10 +718,7 @@ public class BudgetServiceImpl implements BudgetService {
     budgetLine.setFirmGap(firmGap.signum() >= 0 ? BigDecimal.ZERO : firmGap.abs());
     budgetLine.setAvailableAmount(
         currencyScaleService.getCompanyScaledValue(
-            budget,
-            (budgetLine.getAvailableAmount().subtract(amount)).compareTo(BigDecimal.ZERO) > 0
-                ? budgetLine.getAvailableAmount().subtract(amount)
-                : BigDecimal.ZERO));
+            budget, BigDecimal.ZERO.max(budgetLine.getAvailableAmount().subtract(amount))));
   }
 
   @Override
