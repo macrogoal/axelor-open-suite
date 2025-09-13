@@ -1,9 +1,9 @@
 "key","message","comment","context"
 "% in paper format","% 以纸质格式",,
-"%d expense treated successfully,","%d 笔费用处理成功。",,
-"%d expenses treated successfully,","%d 笔费用处理成功。",,
-"%d leave reason(s) treated and %d anomaly(ies) reported !","%d 个请假原因已处理，并报告了 %d 个异常！",,
-"%s date is invalid. It must be included in the timesheet's period.","%s 日期无效。它必须包含在工作表的周期内。",,
+"%d expense treated successfully,","%d笔费用处理成功。",,
+"%d expenses treated successfully,","%d笔费用处理成功。",,
+"%d leave reason(s) treated and %d anomaly(ies) reported !","%d个请假原因已处理，并报告了%d个异常！",,
+"%s date is invalid. It must be included in the timesheet's period.","%s日期无效。它必须包含在工作表的周期内。",,
 "6 days week","每周6天",,
 "<><Badge bg=""warning"">At least one line of this expense exceeds the authorised amount for its type of expense.</Badge></>","<><Badge bg=""warning"">此费用单中的至少一行超过其费用类型的授权金额。</Badge></>",,
 "<br/>Example:<br/>Start unit : day<br/>End unit : hour<br/><strong>$Project.numberHoursADay$</strong><br/>","<br/>示例：<br/>起始单位：天<br/>结束单位：小时<br/><strong>$Project.numberHoursADay$</strong><br/>",,
